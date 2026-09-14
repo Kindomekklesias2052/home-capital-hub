@@ -96,7 +96,7 @@ export const SMS_PATTERNS: SmsPattern[] = [
     senders: ["mpesa", "m-pesa", "safaricom"],
     confidence: 0.94,
     regex: new RegExp(
-      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*${CUR}${AMT}\s+(?:paid|sent) to\s+${PARTY}(?:\s+for account\s+(?<account>[^.]+?))?\s*\.\s*${WHEN}`,
+      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*${CUR}${AMT}\s+(?:paid|sent) to\s+${PARTY}(?:\s+for account\s+(?<account>[^.]+?))?\s*\.?\s*${WHEN}`,
       "i",
     ),
     map: (g) => ({
