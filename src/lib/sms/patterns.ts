@@ -65,7 +65,8 @@ export function toIsoDate(date?: string, time?: string): string | undefined {
 
 const AMT = String.raw`(?<amount>[\d,]+(?:\.\d{1,2})?)`;
 const CUR = String.raw`(?:Ksh|KES|KSH|Kshs)\.?\s*`;
-const PARTY = String.raw`(?<party>(?:(?!\s+on\s+\d)[^.])+?)`;
+/** Counterparty name: greedy, but never swallows a trailing " on <date>" clause. */
+const PARTY = String.raw`(?<party>(?:(?!\s+on\s+\d)[^.])+)`;
 const WHEN = String.raw`(?:on\s*(?<date>\d{1,2}\/\d{1,2}\/\d{2,4})\s*(?:at\s*(?<time>\d{1,2}:\d{2}\s*(?:AM|PM)?))?)?`;
 
 export const SMS_PATTERNS: SmsPattern[] = [
