@@ -65,6 +65,8 @@ export function toIsoDate(date?: string, time?: string): string | undefined {
 
 const AMT = String.raw`(?<amount>[\d,]+(?:\.\d{1,2})?)`;
 const CUR = String.raw`(?:Ksh|KES|KSH|Kshs)\.?\s*`;
+/** Counterparty name: greedy, but never swallows a trailing " on <date>" clause. */
+const PARTY = String.raw`(?<party>(?:(?!\s+on\s+\d)(?!\s+for account\s)[^.])+)`;
 const WHEN = String.raw`(?:on\s*(?<date>\d{1,2}\/\d{1,2}\/\d{2,4})\s*(?:at\s*(?<time>\d{1,2}:\d{2}\s*(?:AM|PM)?))?)?`;
 
 export const SMS_PATTERNS: SmsPattern[] = [
@@ -74,7 +76,7 @@ export const SMS_PATTERNS: SmsPattern[] = [
     senders: ["mpesa", "m-pesa", "safaricom"],
     confidence: 0.93,
     regex: new RegExp(
-      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*${CUR}${AMT}\s+sent to\s+(?<party>[^.]+?)\s+${WHEN}`,
+      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*${CUR}${AMT}\s+sent to\s+${PARTY}\s+${WHEN}`,
       "i",
     ),
     map: (g) => ({
@@ -95,7 +97,7 @@ export const SMS_PATTERNS: SmsPattern[] = [
     senders: ["mpesa", "m-pesa", "safaricom"],
     confidence: 0.94,
     regex: new RegExp(
-      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*${CUR}${AMT}\s+(?:paid|sent) to\s+(?<party>[^.]+?)(?:\s+for account\s+(?<account>[^.]+?))?\s*\.\s*${WHEN}`,
+      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*${CUR}${AMT}\s+(?:paid|sent) to\s+${PARTY}(?:\s+for account\s+(?<account>[^.]+?))?\s*\.?\s*${WHEN}`,
       "i",
     ),
     map: (g) => ({
@@ -118,7 +120,7 @@ export const SMS_PATTERNS: SmsPattern[] = [
     senders: ["mpesa", "m-pesa", "safaricom"],
     confidence: 0.94,
     regex: new RegExp(
-      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*(?:You have received|Received)\s*${CUR}${AMT}\s+from\s+(?<party>[^.]+?)\s+${WHEN}`,
+      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*(?:You have received|Received)\s*${CUR}${AMT}\s+from\s+${PARTY}\s+${WHEN}`,
       "i",
     ),
     map: (g) => ({
@@ -138,7 +140,7 @@ export const SMS_PATTERNS: SmsPattern[] = [
     senders: ["mpesa", "m-pesa", "safaricom"],
     confidence: 0.92,
     regex: new RegExp(
-      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*${WHEN}\s*Withdraw\s*${CUR}${AMT}\s+from\s+(?<party>[^.]+?)\s*(?:New M-PESA balance|\.)`,
+      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*${WHEN}\s*Withdraw\s*${CUR}${AMT}\s+from\s+${PARTY}\s*(?:New M-PESA balance|\.)`,
       "i",
     ),
     map: (g) => ({
@@ -158,7 +160,7 @@ export const SMS_PATTERNS: SmsPattern[] = [
     senders: ["mpesa", "m-pesa", "safaricom"],
     confidence: 0.9,
     regex: new RegExp(
-      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*(?:You have deposited|Give)\s*${CUR}${AMT}\s+to\s+(?<party>[^.]+?)\s+${WHEN}`,
+      String.raw`^(?<ref>[A-Z0-9]{8,12})\s+Confirmed\.?\s*(?:You have deposited|Give)\s*${CUR}${AMT}\s+to\s+${PARTY}\s+${WHEN}`,
       "i",
     ),
     map: (g) => ({
