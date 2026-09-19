@@ -8,6 +8,7 @@ import {
   Tags,
   Smartphone,
   Users,
+  MessageSquare,
   User,
   Settings,
   Moon,
@@ -29,6 +30,7 @@ const primaryNav = [
 ] as const;
 
 const secondaryNav = [
+  { to: "/import-messages", label: "Read messages", icon: MessageSquare },
   { to: "/family", label: "Family", icon: Users },
   { to: "/categories", label: "Categories", icon: Tags },
   { to: "/devices", label: "Devices", icon: Smartphone },
