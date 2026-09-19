@@ -477,6 +477,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      shares_household: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       budget_period: "weekly" | "monthly" | "quarterly" | "yearly"
