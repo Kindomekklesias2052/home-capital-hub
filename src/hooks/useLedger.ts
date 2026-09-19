@@ -279,7 +279,13 @@ export function useCategoryMutations() {
       if (!user) throw new Error("Not signed in");
       const { error } = await supabase
         .from("transaction_categories")
-        .insert({ user_id: user.id, name: name.trim(), scope, is_custom: true });
+        .insert({
+          user_id: user.id,
+          name: name.trim(),
+          scope,
+          is_custom: true,
+          household_id: await activeHouseholdId(),
+        });
       if (error) throw error;
     },
     onSuccess: () => invalidate(["categories"]),
@@ -301,7 +307,9 @@ export function useBudgetMutations() {
     mutationFn: async (input: { category_id: string; amount: number; period: BudgetPeriod; start_date: string }) => {
       if (!user) throw new Error("Not signed in");
       if (!(input.amount > 0)) throw new Error("Budget amount must be greater than zero");
-      const { error } = await supabase.from("budgets").insert({ ...input, user_id: user.id });
+      const { error } = await supabase
+        .from("budgets")
+        .insert({ ...input, user_id: user.id, household_id: await activeHouseholdId() });
       if (error) throw error;
     },
     onSuccess: () => invalidate(["budgets"]),
