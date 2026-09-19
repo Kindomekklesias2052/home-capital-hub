@@ -8,6 +8,7 @@ import {
   Tags,
   Smartphone,
   Users,
+  MessageSquare,
   User,
   Settings,
   Moon,
