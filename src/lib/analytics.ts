@@ -40,6 +40,31 @@ export function spendingByCategory(transactions: TransactionRow[], categories: C
     .slice(0, limit);
 }
 
+/** Where the money comes from, grouped by who/what paid. */
+export function incomeByPayer(transactions: TransactionRow[], categories: CategoryRow[], limit = 8) {
+  const names = new Map(categories.map((c) => [c.id, c.name]));
+  const totals = new Map<string, number>();
+  for (const t of transactions) {
+    if (!INFLOW_TYPES.includes(t.transaction_type)) continue;
+    const label =
+      t.sender ?? t.merchant ?? (t.category_id ? names.get(t.category_id) : null) ?? t.description ?? "Other income";
+    totals.set(label, (totals.get(label) ?? 0) + t.amount);
+  }
+  const rows = [...totals.entries()].map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  const total = rows.reduce((s, r) => s + r.value, 0);
+  return rows.slice(0, limit).map((r) => ({ ...r, share: total ? Math.round((r.value / total) * 1000) / 10 : 0 }));
+}
+
+/** Income grouped by the channel it arrived through (M-PESA, bank, cash …). */
+export function incomeByChannel(transactions: TransactionRow[]) {
+  const totals = new Map<string, number>();
+  for (const t of transactions) {
+    if (!INFLOW_TYPES.includes(t.transaction_type)) continue;
+    totals.set(t.source, (totals.get(t.source) ?? 0) + t.amount);
+  }
+  return [...totals.entries()].map(([source, value]) => ({ source, value })).sort((a, b) => b.value - a.value);
+}
+
 export function monthlyFlow(transactions: TransactionRow[], months = 6) {
   const buckets = new Map<string, { income: number; expenses: number }>();
   const now = new Date();
