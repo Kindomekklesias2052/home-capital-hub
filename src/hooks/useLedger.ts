@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { learningKeyword } from "@/lib/sms/parser";
+import { activeHouseholdId } from "./useHousehold";
 import type { BudgetPeriod, LedgerScope, TransactionSource, TransactionType } from "@/lib/domain";
 
 export interface TransactionRow {
@@ -172,12 +173,14 @@ export function useCreateTransaction() {
     mutationFn: async (input: TransactionInput) => {
       if (!user) throw new Error("Not signed in");
       if (!(input.amount > 0)) throw new Error("Amount must be greater than zero");
+      const household_id = await activeHouseholdId();
       const { data, error } = await supabase
         .from("transactions")
         .insert({
           ...input,
           currency: input.currency ?? "KES",
           user_id: user.id,
+          household_id,
           is_manual: true,
           needs_review: false,
           confidence_score: 1,

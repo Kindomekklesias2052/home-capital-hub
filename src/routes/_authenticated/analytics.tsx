@@ -19,13 +19,15 @@ import { useCategories, useTransactions } from "@/hooks/useLedger";
 import {
   consensusRatio,
   firewallIndex,
+  incomeByChannel,
+  incomeByPayer,
   latencySpeed,
   monthlyFlow,
   scopeTotals,
   spendingByCategory,
 } from "@/lib/analytics";
 import { formatMoney, monthLabel } from "@/lib/format";
-import { SCOPE_LABELS } from "@/lib/domain";
+import { SCOPE_LABELS, SOURCE_LABELS, type TransactionSource } from "@/lib/domain";
 
 export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({
@@ -60,6 +62,8 @@ function AnalyticsPage() {
   const flow = useMemo(() => monthlyFlow(transactions, 6), [transactions]);
   const byScope = useMemo(() => scopeTotals(transactions), [transactions]);
   const catSpend = useMemo(() => spendingByCategory(transactions, categories, 8), [transactions, categories]);
+  const payers = useMemo(() => incomeByPayer(transactions, categories, 6), [transactions, categories]);
+  const channels = useMemo(() => incomeByChannel(transactions), [transactions]);
 
   return (
     <AppShell title="Analytics" subtitle="How well the household institution is run">
@@ -104,6 +108,44 @@ function AnalyticsPage() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+        </section>
+
+        <section className="surface p-4">
+          <h2 className="text-sm font-semibold">Where your money comes from</h2>
+          <p className="text-xs text-muted-foreground">Biggest sources of money coming in.</p>
+          {payers.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">No income recorded yet.</p>
+          ) : (
+            <>
+              <ul className="mt-3 space-y-2.5">
+                {payers.map((p) => (
+                  <li key={p.name}>
+                    <div className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="truncate">{p.name}</span>
+                      <span className="numeric shrink-0 font-medium">
+                        {formatMoney(p.value, "KES", true)}
+                        <span className="ml-2 text-xs text-muted-foreground">{p.share}%</span>
+                      </span>
+                    </div>
+                    <div className="mt-1 h-2 rounded-full bg-muted">
+                      <div
+                        className="h-2 rounded-full bg-success"
+                        style={{ width: `${Math.max(2, Math.min(100, p.share))}%` }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-3">
+                {channels.map((c) => (
+                  <span key={c.source} className="rounded-full bg-muted px-3 py-1 text-xs">
+                    {SOURCE_LABELS[c.source as TransactionSource]} ·{" "}
+                    <span className="numeric font-medium">{formatMoney(c.value, "KES", true)}</span>
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
         </section>
 
         <section className="surface p-4">
