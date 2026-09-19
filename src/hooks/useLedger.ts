@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { learningKeyword } from "@/lib/sms/parser";
+import { activeHouseholdId } from "./useHousehold";
 import type { BudgetPeriod, LedgerScope, TransactionSource, TransactionType } from "@/lib/domain";
 
 export interface TransactionRow {
@@ -172,12 +173,14 @@ export function useCreateTransaction() {
     mutationFn: async (input: TransactionInput) => {
       if (!user) throw new Error("Not signed in");
       if (!(input.amount > 0)) throw new Error("Amount must be greater than zero");
+      const household_id = await activeHouseholdId();
       const { data, error } = await supabase
         .from("transactions")
         .insert({
           ...input,
           currency: input.currency ?? "KES",
           user_id: user.id,
+          household_id,
           is_manual: true,
           needs_review: false,
           confidence_score: 1,
@@ -276,7 +279,13 @@ export function useCategoryMutations() {
       if (!user) throw new Error("Not signed in");
       const { error } = await supabase
         .from("transaction_categories")
-        .insert({ user_id: user.id, name: name.trim(), scope, is_custom: true });
+        .insert({
+          user_id: user.id,
+          name: name.trim(),
+          scope,
+          is_custom: true,
+          household_id: await activeHouseholdId(),
+        });
       if (error) throw error;
     },
     onSuccess: () => invalidate(["categories"]),
@@ -298,7 +307,9 @@ export function useBudgetMutations() {
     mutationFn: async (input: { category_id: string; amount: number; period: BudgetPeriod; start_date: string }) => {
       if (!user) throw new Error("Not signed in");
       if (!(input.amount > 0)) throw new Error("Budget amount must be greater than zero");
-      const { error } = await supabase.from("budgets").insert({ ...input, user_id: user.id });
+      const { error } = await supabase
+        .from("budgets")
+        .insert({ ...input, user_id: user.id, household_id: await activeHouseholdId() });
       if (error) throw error;
     },
     onSuccess: () => invalidate(["budgets"]),

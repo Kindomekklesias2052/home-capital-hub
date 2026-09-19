@@ -91,9 +91,22 @@ export const Route = createFileRoute("/api/public/transactions/sms")({
           return json({ error: "Could not store message" }, 500);
         }
 
+        // 2b. Shared household, if the owner belongs to one.
+        const { data: membership } = await supabaseAdmin
+          .from("household_members")
+          .select("household_id")
+          .eq("user_id", userId)
+          .maybeSingle();
+        const householdId = membership?.household_id ?? null;
+
         // 3. Load the owner's categories and learned corrections for classification.
         const [{ data: categories }, { data: rules }] = await Promise.all([
-          supabaseAdmin.from("transaction_categories").select("id, name, scope").eq("user_id", userId),
+          householdId
+            ? supabaseAdmin
+                .from("transaction_categories")
+                .select("id, name, scope")
+                .eq("household_id", householdId)
+            : supabaseAdmin.from("transaction_categories").select("id, name, scope").eq("user_id", userId),
           supabaseAdmin
             .from("category_rules")
             .select("keyword, scope, category_id, transaction_type, hits")
@@ -146,6 +159,7 @@ export const Route = createFileRoute("/api/public/transactions/sms")({
             is_manual: false,
             needs_review: parsed.needsReview,
             sms_message_id: stored.id,
+            household_id: householdId,
           })
           .select()
           .single();

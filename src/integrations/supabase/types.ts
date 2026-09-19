@@ -20,6 +20,7 @@ export type Database = {
           category_id: string | null
           created_at: string
           end_date: string | null
+          household_id: string | null
           id: string
           period: Database["public"]["Enums"]["budget_period"]
           start_date: string
@@ -30,6 +31,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           end_date?: string | null
+          household_id?: string | null
           id?: string
           period?: Database["public"]["Enums"]["budget_period"]
           start_date?: string
@@ -40,6 +42,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           end_date?: string | null
+          household_id?: string | null
           id?: string
           period?: Database["public"]["Enums"]["budget_period"]
           start_date?: string
@@ -51,6 +54,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "transaction_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budgets_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
             referencedColumns: ["id"]
           },
         ]
@@ -126,6 +136,62 @@ export type Database = {
           id?: string
           latency_speed?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      household_members: {
+        Row: {
+          household_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          household_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          household_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_members_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      households: {
+        Row: {
+          created_at: string
+          id: string
+          invite_code: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invite_code: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invite_code?: string
+          name?: string
+          owner_id?: string
         }
         Relationships: []
       }
@@ -237,6 +303,7 @@ export type Database = {
       transaction_categories: {
         Row: {
           created_at: string
+          household_id: string | null
           id: string
           is_custom: boolean
           name: string
@@ -245,6 +312,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          household_id?: string | null
           id?: string
           is_custom?: boolean
           name: string
@@ -253,13 +321,22 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          household_id?: string | null
           id?: string
           is_custom?: boolean
           name?: string
           scope?: Database["public"]["Enums"]["ledger_scope"]
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transaction_categories_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transactions: {
         Row: {
@@ -272,6 +349,7 @@ export type Database = {
           currency: string
           description: string | null
           funded_from: Database["public"]["Enums"]["ledger_scope"] | null
+          household_id: string | null
           id: string
           is_manual: boolean
           merchant: string | null
@@ -296,6 +374,7 @@ export type Database = {
           currency?: string
           description?: string | null
           funded_from?: Database["public"]["Enums"]["ledger_scope"] | null
+          household_id?: string | null
           id?: string
           is_manual?: boolean
           merchant?: string | null
@@ -320,6 +399,7 @@ export type Database = {
           currency?: string
           description?: string | null
           funded_from?: Database["public"]["Enums"]["ledger_scope"] | null
+          household_id?: string | null
           id?: string
           is_manual?: boolean
           merchant?: string | null
@@ -343,6 +423,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "transactions_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "transactions_sms_message_id_fkey"
             columns: ["sms_message_id"]
             isOneToOne: false
@@ -356,7 +443,41 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_household: {
+        Args: { _name: string }
+        Returns: {
+          created_at: string
+          id: string
+          invite_code: string
+          name: string
+          owner_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "households"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      is_household_member: { Args: { _household_id: string }; Returns: boolean }
+      is_household_owner: { Args: { _household_id: string }; Returns: boolean }
+      join_household: {
+        Args: { _code: string }
+        Returns: {
+          created_at: string
+          id: string
+          invite_code: string
+          name: string
+          owner_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "households"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      shares_household: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       budget_period: "weekly" | "monthly" | "quarterly" | "yearly"

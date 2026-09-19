@@ -7,6 +7,7 @@ import {
   Wallet,
   Tags,
   Smartphone,
+  Users,
   User,
   Settings,
   Moon,
@@ -28,6 +29,7 @@ const primaryNav = [
 ] as const;
 
 const secondaryNav = [
+  { to: "/family", label: "Family", icon: Users },
   { to: "/categories", label: "Categories", icon: Tags },
   { to: "/devices", label: "Devices", icon: Smartphone },
   { to: "/profile", label: "Profile", icon: User },
