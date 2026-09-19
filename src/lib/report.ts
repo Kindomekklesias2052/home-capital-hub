@@ -119,7 +119,7 @@ export function reportPdf(report: ReportData, categories: CategoryRow[]): jsPDF 
       formatDate(t.transaction_date),
       TYPE_LABELS[t.transaction_type],
       SCOPE_LABELS[t.scope],
-      t.merchant ?? t.recipient ?? t.sender ?? (t.category_id ? names.get(t.category_id) ?? "" : "") ?? "",
+      t.merchant ?? t.recipient ?? t.sender ?? (t.category_id ? (names.get(t.category_id) ?? "") : ""),
       formatMoney(t.amount),
     ]),
     styles: { fontSize: 8 },
