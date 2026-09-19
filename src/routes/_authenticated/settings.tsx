@@ -49,38 +49,24 @@ function SettingsPage() {
     toast.success("Password updated");
   }
 
-  function exportCsv() {
-    const header = [
-      "date",
-      "type",
-      "amount",
-      "currency",
-      "scope",
-      "source",
-      "merchant",
-      "reference",
-      "description",
-    ];
-    const rows = transactions.map((t) =>
-      [
-        t.transaction_date,
-        t.transaction_type,
-        t.amount,
-        t.currency,
-        t.scope,
-        t.source,
-        t.merchant ?? "",
-        t.reference ?? "",
-        (t.description ?? "").replace(/[",\n]/g, " "),
-      ].join(","),
-    );
-    const blob = new Blob([[header.join(","), ...rows].join("\n")], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "kinship-capital-ledger.csv";
-    a.click();
-    URL.revokeObjectURL(url);
+  function downloadPdf() {
+    const report = buildReport(transactions, categories, range);
+    if (!report.transactions.length) {
+      toast.error("No transactions in this period");
+      return;
+    }
+    reportPdf(report, categories).save(`kinship-summary-${range}.pdf`);
+    toast.success("Summary downloaded");
+  }
+
+  function downloadCsv() {
+    const report = buildReport(transactions, categories, range);
+    if (!report.transactions.length) {
+      toast.error("No transactions in this period");
+      return;
+    }
+    downloadBlob(reportCsv(report, categories), `kinship-summary-${range}.csv`, "text/csv");
+    toast.success("Spreadsheet downloaded");
   }
 
   return (
