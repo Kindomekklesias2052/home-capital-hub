@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kinship Capital</string>
+    <string name="intro">Allow this app to read your texts so your M-PESA, KCB and Equity messages are filed in Kinship Capital automatically. Nothing else is read or sent.</string>
+    <string name="grant_permission">Allow reading my texts</string>
+    <string name="hint_base_url">Kinship Capital web address</string>
+    <string name="hint_device_id">Device ID (from the Devices page)</string>
+    <string name="hint_device_token">Device token (from the Devices page)</string>
+    <string name="save_pairing">Save pairing</string>
+    <string name="send_test">Send a test message</string>
+    <string name="saved">Pairing saved</string>
+    <string name="permission_needed">Without SMS permission the app cannot forward your money messages.</string>
+    <string name="status_no_permission">Waiting for permission to read texts</string>
+    <string name="status_not_paired">Permission granted. Now paste the Device ID and token from the Devices page.</string>
+    <string name="status_ready">Ready — money messages are being sent to your ledger.</string>
+    <string name="test_sent">Test message sent. Check your ledger.</string>
+    <string name="test_failed">Could not send. Check the address, ID and token.</string>
+</resources>
