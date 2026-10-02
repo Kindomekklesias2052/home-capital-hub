@@ -139,6 +139,44 @@ export type Database = {
         }
         Relationships: []
       }
+      household_invites: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          household_id: string
+          id: string
+          revoked_at: string | null
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at: string
+          household_id: string
+          id?: string
+          revoked_at?: string | null
+          token: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          household_id?: string
+          id?: string
+          revoked_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_invites_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       household_members: {
         Row: {
           household_id: string
@@ -443,6 +481,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_household_invite: {
+        Args: { _token: string }
+        Returns: {
+          created_at: string
+          id: string
+          invite_code: string
+          name: string
+          owner_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "households"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_household: {
         Args: { _name: string }
         Returns: {
@@ -455,6 +509,24 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "households"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_household_invite: {
+        Args: { _days?: number }
+        Returns: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          household_id: string
+          id: string
+          revoked_at: string | null
+          token: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "household_invites"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -476,6 +548,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      preview_household_invite: {
+        Args: { _token: string }
+        Returns: {
+          household_name: string
+          reason: string
+          valid: boolean
+        }[]
       }
       shares_household: { Args: { _user_id: string }; Returns: boolean }
     }
