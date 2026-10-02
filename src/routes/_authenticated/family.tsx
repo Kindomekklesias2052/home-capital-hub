@@ -68,6 +68,8 @@ function FamilyPage() {
               </div>
             </section>
 
+            {isOwner ? <InviteLinks householdId={household.id} /> : null}
+
             <section className="surface space-y-2 p-4">
               <h2 className="text-sm font-semibold">Members</h2>
               <ul className="divide-y divide-border">
