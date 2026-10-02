@@ -26,6 +26,7 @@ import { Route as AuthenticatedImportMessagesRouteImport } from './routes/_authe
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ApiPublicTransactionsSmsRouteImport } from './routes/api/public/transactions/sms'
 
 const IndexRoute = IndexRouteImport.update({
@@ -115,6 +116,11 @@ const AuthenticatedTransactionsRoute =
     path: '/transactions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTransactionsSmsRoute =
   ApiPublicTransactionsSmsRouteImport.update({
     id: '/api/public/transactions/sms',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/public/transactions/sms': typeof ApiPublicTransactionsSmsRoute
 }
 export interface FileRoutesByTo {
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/public/transactions/sms': typeof ApiPublicTransactionsSmsRoute
 }
 export interface FileRoutesById {
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/transactions': typeof AuthenticatedTransactionsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/public/transactions/sms': typeof ApiPublicTransactionsSmsRoute
 }
 export interface FileRouteTypes {
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/transactions'
+    | '/invite/$token'
     | '/api/public/transactions/sms'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/transactions'
+    | '/invite/$token'
     | '/api/public/transactions/sms'
   id:
     | '__root__'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/_authenticated/transactions'
+    | '/invite/$token'
     | '/api/public/transactions/sms'
   fileRoutesById: FileRoutesById
 }
@@ -249,6 +261,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   ApiPublicTransactionsSmsRoute: typeof ApiPublicTransactionsSmsRoute
 }
 
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTransactionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/transactions/sms': {
       id: '/api/public/transactions/sms'
       path: '/api/public/transactions/sms'
@@ -421,6 +441,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  InviteTokenRoute: InviteTokenRoute,
   ApiPublicTransactionsSmsRoute: ApiPublicTransactionsSmsRoute,
 }
 export const routeTree = rootRouteImport

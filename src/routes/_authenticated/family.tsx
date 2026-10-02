@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Copy, LogOut, Users } from "lucide-react";
+import { Copy, Link2, LogOut, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { useHousehold, useHouseholdMembers, useHouseholdMutations } from "@/hooks/useHousehold";
+import { useHousehold, useHouseholdMembers, useHouseholdMutations, useInvites, useInviteMutations } from "@/hooks/useHousehold";
 import { formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/family")({
@@ -166,5 +166,97 @@ function FamilyPage() {
         )}
       </div>
     </AppShell>
+  );
+}
+
+function InviteLinks({ householdId }: { householdId: string }) {
+  const { data: invites = [] } = useInvites(householdId, true);
+  const { createInvite, revokeInvite } = useInviteMutations();
+  const [days, setDays] = useState("7");
+  const linkFor = (token: string) => `${window.location.origin}/invite/${token}`;
+  const now = Date.now();
+
+  async function share(token: string) {
+    const url = linkFor(token);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Join our household on Kinship Capital", url });
+        return;
+      } catch {
+        /* fall back to copy */
+      }
+    }
+    await navigator.clipboard.writeText(url);
+    toast.success("Invite link copied");
+  }
+
+  return (
+    <section className="surface space-y-3 p-4">
+      <div className="flex items-center gap-2">
+        <Link2 className="size-4 text-primary" />
+        <h2 className="text-sm font-semibold">Invite links</h2>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Send a link instead of a code. It works until it expires or you cancel it.
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <select
+          aria-label="Link expires after"
+          className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+          value={days}
+          onChange={(e) => setDays(e.target.value)}
+        >
+          <option value="1">Expires in 1 day</option>
+          <option value="7">Expires in 7 days</option>
+          <option value="30">Expires in 30 days</option>
+        </select>
+        <Button
+          size="sm"
+          disabled={createInvite.isPending}
+          onClick={() =>
+            createInvite.mutate(Number(days), {
+              onSuccess: (inv) => void share(inv.token),
+              onError: (e) => toast.error((e as Error).message),
+            })
+          }
+        >
+          Create invite link
+        </Button>
+      </div>
+      {invites.length ? (
+        <ul className="divide-y divide-border">
+          {invites.map((inv) => {
+            const status = inv.revoked_at
+              ? "Cancelled"
+              : new Date(inv.expires_at).getTime() < now
+                ? "Expired"
+                : `Active · expires ${formatDate(inv.expires_at)}`;
+            const active = status.startsWith("Active");
+            return (
+              <li key={inv.id} className="flex items-center justify-between gap-2 py-2.5">
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium">…/invite/{inv.token.slice(0, 8)}</p>
+                  <p className="text-xs text-muted-foreground">{status}</p>
+                </div>
+                {active ? (
+                  <div className="flex gap-1">
+                    <Button variant="outline" size="sm" onClick={() => void share(inv.token)}>
+                      <Copy className="mr-1 size-3" /> Share
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => revokeInvite.mutate(inv.id, { onSuccess: () => toast.success("Link cancelled") })}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </section>
   );
 }
