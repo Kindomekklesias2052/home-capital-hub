@@ -17,6 +17,7 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedAddTransactionRouteImport } from './routes/_authenticated/add-transaction'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
+import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
 import { Route as AuthenticatedBudgetsRouteImport } from './routes/_authenticated/budgets'
 import { Route as AuthenticatedCategoriesRouteImport } from './routes/_authenticated/categories'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -26,6 +27,8 @@ import { Route as AuthenticatedImportMessagesRouteImport } from './routes/_authe
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
+import { Route as ApiAskRouteImport } from './routes/api/ask'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ApiPublicTransactionsSmsRouteImport } from './routes/api/public/transactions/sms'
 
 const IndexRoute = IndexRouteImport.update({
@@ -66,6 +69,11 @@ const AuthenticatedAddTransactionRoute =
 const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
+  id: '/ask',
+  path: '/ask',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedBudgetsRoute = AuthenticatedBudgetsRouteImport.update({
@@ -115,6 +123,16 @@ const AuthenticatedTransactionsRoute =
     path: '/transactions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiAskRoute = ApiAskRouteImport.update({
+  id: '/api/ask',
+  path: '/api/ask',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTransactionsSmsRoute =
   ApiPublicTransactionsSmsRouteImport.update({
     id: '/api/public/transactions/sms',
@@ -130,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/add-transaction': typeof AuthenticatedAddTransactionRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/ask': typeof AuthenticatedAskRoute
   '/budgets': typeof AuthenticatedBudgetsRoute
   '/categories': typeof AuthenticatedCategoriesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -139,6 +158,8 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/ask': typeof ApiAskRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/public/transactions/sms': typeof ApiPublicTransactionsSmsRoute
 }
 export interface FileRoutesByTo {
@@ -149,6 +170,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/add-transaction': typeof AuthenticatedAddTransactionRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/ask': typeof AuthenticatedAskRoute
   '/budgets': typeof AuthenticatedBudgetsRoute
   '/categories': typeof AuthenticatedCategoriesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -158,6 +180,8 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/ask': typeof ApiAskRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/public/transactions/sms': typeof ApiPublicTransactionsSmsRoute
 }
 export interface FileRoutesById {
@@ -170,6 +194,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/add-transaction': typeof AuthenticatedAddTransactionRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
+  '/_authenticated/ask': typeof AuthenticatedAskRoute
   '/_authenticated/budgets': typeof AuthenticatedBudgetsRoute
   '/_authenticated/categories': typeof AuthenticatedCategoriesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -179,6 +204,8 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/ask': typeof ApiAskRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/public/transactions/sms': typeof ApiPublicTransactionsSmsRoute
 }
 export interface FileRouteTypes {
@@ -191,6 +218,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/add-transaction'
     | '/analytics'
+    | '/ask'
     | '/budgets'
     | '/categories'
     | '/dashboard'
@@ -200,6 +228,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/transactions'
+    | '/api/ask'
+    | '/invite/$token'
     | '/api/public/transactions/sms'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -210,6 +240,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/add-transaction'
     | '/analytics'
+    | '/ask'
     | '/budgets'
     | '/categories'
     | '/dashboard'
@@ -219,6 +250,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/transactions'
+    | '/api/ask'
+    | '/invite/$token'
     | '/api/public/transactions/sms'
   id:
     | '__root__'
@@ -230,6 +263,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/add-transaction'
     | '/_authenticated/analytics'
+    | '/_authenticated/ask'
     | '/_authenticated/budgets'
     | '/_authenticated/categories'
     | '/_authenticated/dashboard'
@@ -239,6 +273,8 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/_authenticated/transactions'
+    | '/api/ask'
+    | '/invite/$token'
     | '/api/public/transactions/sms'
   fileRoutesById: FileRoutesById
 }
@@ -249,6 +285,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiAskRoute: typeof ApiAskRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   ApiPublicTransactionsSmsRoute: typeof ApiPublicTransactionsSmsRoute
 }
 
@@ -308,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/analytics'
       preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ask': {
+      id: '/_authenticated/ask'
+      path: '/ask'
+      fullPath: '/ask'
+      preLoaderRoute: typeof AuthenticatedAskRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/budgets': {
@@ -373,6 +418,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTransactionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/ask': {
+      id: '/api/ask'
+      path: '/api/ask'
+      fullPath: '/api/ask'
+      preLoaderRoute: typeof ApiAskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/transactions/sms': {
       id: '/api/public/transactions/sms'
       path: '/api/public/transactions/sms'
@@ -386,6 +445,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAddTransactionRoute: typeof AuthenticatedAddTransactionRoute
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
+  AuthenticatedAskRoute: typeof AuthenticatedAskRoute
   AuthenticatedBudgetsRoute: typeof AuthenticatedBudgetsRoute
   AuthenticatedCategoriesRoute: typeof AuthenticatedCategoriesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -400,6 +460,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAddTransactionRoute: AuthenticatedAddTransactionRoute,
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
+  AuthenticatedAskRoute: AuthenticatedAskRoute,
   AuthenticatedBudgetsRoute: AuthenticatedBudgetsRoute,
   AuthenticatedCategoriesRoute: AuthenticatedCategoriesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
@@ -421,6 +482,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiAskRoute: ApiAskRoute,
+  InviteTokenRoute: InviteTokenRoute,
   ApiPublicTransactionsSmsRoute: ApiPublicTransactionsSmsRoute,
 }
 export const routeTree = rootRouteImport

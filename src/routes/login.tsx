@@ -1,3 +1,4 @@
+import { goAfterSignIn } from "@/lib/pending-invite";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (user) void navigate({ to: "/dashboard" });
+    if (user) goAfterSignIn(navigate);
   }, [user, navigate]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -41,7 +42,7 @@ function LoginPage() {
       return;
     }
     toast.success("Welcome back");
-    void navigate({ to: "/dashboard" });
+    goAfterSignIn(navigate);
   }
 
   return (

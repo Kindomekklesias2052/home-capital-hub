@@ -1,3 +1,4 @@
+import { goAfterSignIn } from "@/lib/pending-invite";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -55,7 +56,7 @@ function RegisterPage() {
     }
     if (data.session) {
       toast.success("Your ledgers are ready");
-      void navigate({ to: "/dashboard" });
+      goAfterSignIn(navigate);
     } else {
       toast.success("Check your email to confirm your account");
       void navigate({ to: "/login" });

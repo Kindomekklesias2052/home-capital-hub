@@ -4,9 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 
 /** Listens for incoming texts and queues money messages for upload. */
 class SmsReceiver : BroadcastReceiver() {
@@ -25,17 +22,6 @@ class SmsReceiver : BroadcastReceiver() {
         if (body.isBlank()) return
         val receivedAt = messages[0].timestampMillis
 
-        val data = Data.Builder()
-            .putString(SmsUploadWorker.KEY_SENDER, sender)
-            .putString(SmsUploadWorker.KEY_BODY, body)
-            .putLong(SmsUploadWorker.KEY_RECEIVED_AT, receivedAt)
-            .build()
-
-        WorkManager.getInstance(context).enqueue(
-            OneTimeWorkRequestBuilder<SmsUploadWorker>()
-                .setConstraints(SmsUploadWorker.constraints())
-                .setInputData(data)
-                .build()
-        )
+        SmsUploader.enqueue(context, sender, body, receivedAt)
     }
 }

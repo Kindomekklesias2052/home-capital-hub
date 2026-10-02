@@ -107,3 +107,52 @@ export function useHouseholdMutations() {
 
   return { create, join, removeMember };
 }
+
+export interface HouseholdInvite {
+  id: string;
+  token: string;
+  expires_at: string;
+  revoked_at: string | null;
+  created_at: string;
+}
+
+/** Invite links for the owner's household (RLS: owner only). */
+export function useInvites(householdId: string | undefined, enabled: boolean) {
+  return useQuery({
+    queryKey: ["household-invites", householdId],
+    enabled: !!householdId && enabled,
+    queryFn: async (): Promise<HouseholdInvite[]> => {
+      const { data, error } = await supabase
+        .from("household_invites")
+        .select("id, token, expires_at, revoked_at, created_at")
+        .eq("household_id", householdId!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+export function useInviteMutations() {
+  const qc = useQueryClient();
+  const refresh = () => qc.invalidateQueries({ queryKey: ["household-invites"] });
+  const createInvite = useMutation({
+    mutationFn: async (days: number) => {
+      const { data, error } = await supabase.rpc("create_household_invite", { _days: days });
+      if (error) throw error;
+      return data as unknown as HouseholdInvite;
+    },
+    onSuccess: refresh,
+  });
+  const revokeInvite = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("household_invites")
+        .update({ revoked_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: refresh,
+  });
+  return { createInvite, revokeInvite };
+}
