@@ -54,6 +54,17 @@ export function useHouseholdMembers(householdId: string | undefined) {
   });
 }
 
+/** Names of everyone in the household, keyed by user id ("You" for the signed-in user). */
+export function usePeople() {
+  const { user } = useAuth();
+  const { data: household } = useHousehold();
+  const { data: members = [] } = useHouseholdMembers(household?.id);
+  const names = new Map<string, string>(
+    members.map((m) => [m.user_id, m.user_id === user?.id ? "You" : (m.full_name ?? "Family member")]),
+  );
+  return { names, shared: members.length > 1, members };
+}
+
 /** Household id to stamp on newly created records, or null when solo. */
 export async function activeHouseholdId(): Promise<string | null> {
   const { data } = await supabase.from("households").select("id").maybeSingle();

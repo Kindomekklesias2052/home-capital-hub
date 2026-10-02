@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCategories, useTransactions, type TransactionRow } from "@/hooks/useLedger";
+import { usePeople } from "@/hooks/useHousehold";
 import {
   SCOPES,
   SCOPE_LABELS,
@@ -64,11 +65,14 @@ function TransactionsPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [onlyReview, setOnlyReview] = useState(!!review);
+  const [person, setPerson] = useState<string>(ALL);
+  const { names, shared, members } = usePeople();
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return transactions.filter((t) => {
       if (onlyReview && !t.needs_review) return false;
+      if (person !== ALL && t.user_id !== person) return false;
       if (scope !== ALL && t.scope !== scope) return false;
       if (source !== ALL && t.source !== source) return false;
       if (type !== ALL && t.transaction_type !== type) return false;
@@ -84,11 +88,12 @@ function TransactionsPage() {
       }
       return true;
     });
-  }, [transactions, q, scope, source, type, category, from, to, onlyReview]);
+  }, [transactions, q, scope, source, type, category, from, to, onlyReview, person]);
 
   const totals = totalsFor(filtered);
   const categoryName = (id: string | null) => categories.find((c) => c.id === id)?.name;
   const activeFilters =
+    (person !== ALL ? 1 : 0) +
     (scope !== ALL ? 1 : 0) +
     (source !== ALL ? 1 : 0) +
     (type !== ALL ? 1 : 0) +
@@ -98,6 +103,7 @@ function TransactionsPage() {
     (onlyReview ? 1 : 0);
 
   function clearFilters() {
+    setPerson(ALL);
     setScope(ALL);
     setSource(ALL);
     setType(ALL);
@@ -142,6 +148,14 @@ function TransactionsPage() {
         {showFilters ? (
           <div className="surface space-y-3 p-4">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {shared ? (
+                <FilterSelect
+                  label="Added by"
+                  value={person}
+                  onChange={setPerson}
+                  options={members.map((m) => ({ value: m.user_id, label: names.get(m.user_id) ?? "Family member" }))}
+                />
+              ) : null}
               <FilterSelect label="Ledger" value={scope} onChange={setScope} options={SCOPES.map((s) => ({ value: s, label: SCOPE_LABELS[s] }))} />
               <FilterSelect label="Source" value={source} onChange={setSource} options={SOURCES.map((s) => ({ value: s, label: SOURCE_LABELS[s] }))} />
               <FilterSelect label="Type" value={type} onChange={setType} options={TRANSACTION_TYPES.map((t) => ({ value: t, label: TYPE_LABELS[t] }))} />
@@ -198,7 +212,12 @@ function TransactionsPage() {
           <ul className="surface divide-y divide-border p-1">
             {filtered.map((t) => (
               <li key={t.id}>
-                <TransactionItem transaction={t} categoryName={categoryName(t.category_id)} onSelect={setSelected} />
+                <TransactionItem
+                  transaction={t}
+                  categoryName={categoryName(t.category_id)}
+                  addedBy={shared ? (names.get(t.user_id) ?? "Former member") : undefined}
+                  onSelect={setSelected}
+                />
               </li>
             ))}
           </ul>

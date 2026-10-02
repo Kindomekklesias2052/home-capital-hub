@@ -8,10 +8,12 @@ import { cn } from "@/lib/utils";
 export function TransactionItem({
   transaction,
   categoryName,
+  addedBy,
   onSelect,
 }: {
   transaction: TransactionRow;
   categoryName?: string | undefined;
+  addedBy?: string | undefined;
   onSelect?: (t: TransactionRow) => void;
 }) {
   const inflow = INFLOW_TYPES.includes(transaction.transaction_type);
@@ -55,6 +57,11 @@ export function TransactionItem({
         <span className="mt-2 flex flex-wrap items-center gap-1.5">
           <ScopeBadge scope={transaction.scope} />
           {categoryName ? <CategoryBadge name={categoryName} /> : <CategoryBadge name="Uncategorised" />}
+          {addedBy ? (
+            <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+              by {addedBy}
+            </span>
+          ) : null}
           {transaction.needs_review ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-warning/20 px-2 py-0.5 text-[11px] font-semibold text-warning-foreground">
               <AlertTriangle className="size-3" /> Confirm
