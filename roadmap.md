@@ -1,0 +1,2 @@
+- [ ] Email PDF summary to inbox (needs sending domain)
+- [ ] Household: user creates own household, invites a family member (needs member's email/phone sign-up)
