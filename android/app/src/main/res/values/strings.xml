@@ -15,4 +15,16 @@
     <string name="status_ready">Ready — money messages are being sent to your ledger.</string>
     <string name="test_sent">Test message sent. Check your ledger.</string>
     <string name="test_failed">Could not send. Check the address, ID and token.</string>
+    <string name="sync_history">Sync history</string>
+    <string name="retry_failed">Retry failed messages</string>
+    <string name="refresh">Refresh</string>
+    <string name="nothing_to_retry">Nothing to retry.</string>
+    <string name="retrying">Retrying %1$d message(s)…</string>
+    <string name="sync_summary">%1$d messages · %2$d sent · %3$d failed</string>
+    <string name="sync_empty">No money messages yet. They\'ll appear here as they arrive.</string>
+    <string name="st_sent">Sent</string>
+    <string name="st_duplicate">Already in ledger</string>
+    <string name="st_unrecognised">Saved, not recognised</string>
+    <string name="st_pending">Waiting to send</string>
+    <string name="st_failed">Failed</string>
 </resources>

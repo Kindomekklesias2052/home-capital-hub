@@ -52,6 +52,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.testButton.setOnClickListener { sendTestMessage() }
+        binding.historyButton.setOnClickListener {
+            startActivity(android.content.Intent(this, SyncHistoryActivity::class.java))
+        }
 
         // Ask on first open, exactly once per launch if not yet granted.
         if (!hasSmsPermission()) askForSmsPermission()
@@ -88,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val ok = withContext(Dispatchers.IO) {
                 SmsUploader.send(applicationContext, "MPESA", sample, System.currentTimeMillis())
-            }
+            } !is SmsUploader.Outcome.Failed
             Toast.makeText(
                 this@MainActivity,
                 if (ok) getString(R.string.test_sent) else getString(R.string.test_failed),
