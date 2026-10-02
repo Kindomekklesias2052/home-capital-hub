@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- AI answers run in src/lib/ai/ask.server.ts behind /api/ask using the caller's bearer token, so RLS limits the model to data the user can read.

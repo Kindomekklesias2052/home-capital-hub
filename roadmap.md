@@ -1,6 +1,6 @@
 - [ ] Email PDF summary to inbox (needs sending domain)
 - [ ] Household: user creates own household, invites a family member (needs member's email/phone sign-up)
 - [ ] Import user's real M-PESA/bank texts (needs user to paste texts — I can't access their phone)
-- [ ] Invite links with expiry + revoke
-- [ ] AI assistant: ask questions about transactions/budgets
-- [ ] Android sync history: list sent/failed, retry, dedupe
+- [x] Invite links with expiry + revoke
+- [x] AI assistant: ask questions about transactions/budgets
+- [x] Android sync history: list sent/failed, retry, dedupe
